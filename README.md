@@ -27,7 +27,7 @@ No external library yet.
 
 ## How it works
 
-(preparing...)
+![how_it_works](resource/how_it_works.png)
 
 
 
