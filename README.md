@@ -13,7 +13,7 @@ Detect fingertip by using machine learning for pose estimation.
 
 #### 1.1 Prepare your own Core ML model
 
-![prerequest_002_mlmodel](/Users/canapio/Project/machine%20learning/MoT%20Labs/github_project/ios-project/FingertipEstimation-CoreML/resource/prerequest_002_mlmodel.png)
+![prerequest_002_mlmodel](resource/prerequest_002_mlmodel.png)
 
 #### 1.2 Add permission in info.plist for device's camera access
 
