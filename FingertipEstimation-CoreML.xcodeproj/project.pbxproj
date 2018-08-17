@@ -12,10 +12,12 @@
 		552712FB2126B76C0096F27E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 552712F92126B76C0096F27E /* Main.storyboard */; };
 		552712FD2126B76E0096F27E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 552712FC2126B76E0096F27E /* Assets.xcassets */; };
 		552713002126B76E0096F27E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 552712FE2126B76E0096F27E /* LaunchScreen.storyboard */; };
-		5527130A2126B83D0096F27E /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713072126B83D0096F27E /* Measure.swift */; };
-		5527130B2126B83D0096F27E /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713082126B83D0096F27E /* VideoCapture.swift */; };
-		5527130C2126B83D0096F27E /* PoseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713092126B83D0096F27E /* PoseView.swift */; };
-		552713102126BA030096F27E /* mv2_cpm_model_104000.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 5527130F2126BA030096F27E /* mv2_cpm_model_104000.mlmodel */; };
+		552713152126C6BA0096F27E /* HeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713112126C6B90096F27E /* HeatmapView.swift */; };
+		552713162126C6BA0096F27E /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713122126C6BA0096F27E /* VideoCapture.swift */; };
+		552713172126C6BA0096F27E /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713132126C6BA0096F27E /* DrawingView.swift */; };
+		552713182126C6BA0096F27E /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552713142126C6BA0096F27E /* Measure.swift */; };
+		5527131A2126C6CB0096F27E /* Estimation Model in Resources */ = {isa = PBXBuildFile; fileRef = 552713192126C6CB0096F27E /* Estimation Model */; };
+		5527131C2126C6D30096F27E /* mv2_cpm_model_98000.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 5527131B2126C6D30096F27E /* mv2_cpm_model_98000.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,10 +28,12 @@
 		552712FC2126B76E0096F27E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		552712FF2126B76E0096F27E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		552713012126B76E0096F27E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		552713072126B83D0096F27E /* Measure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Measure.swift; sourceTree = "<group>"; };
-		552713082126B83D0096F27E /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
-		552713092126B83D0096F27E /* PoseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PoseView.swift; sourceTree = "<group>"; };
-		5527130F2126BA030096F27E /* mv2_cpm_model_104000.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = mv2_cpm_model_104000.mlmodel; sourceTree = "<group>"; };
+		552713112126C6B90096F27E /* HeatmapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeatmapView.swift; sourceTree = "<group>"; };
+		552713122126C6BA0096F27E /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		552713132126C6BA0096F27E /* DrawingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
+		552713142126C6BA0096F27E /* Measure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Measure.swift; sourceTree = "<group>"; };
+		552713192126C6CB0096F27E /* Estimation Model */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Estimation Model"; sourceTree = "<group>"; };
+		5527131B2126C6D30096F27E /* mv2_cpm_model_98000.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = mv2_cpm_model_98000.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,12 +66,14 @@
 		552712F42126B76C0096F27E /* FingertipEstimation-CoreML */ = {
 			isa = PBXGroup;
 			children = (
-				5527130F2126BA030096F27E /* mv2_cpm_model_104000.mlmodel */,
+				5527131B2126C6D30096F27E /* mv2_cpm_model_98000.mlmodel */,
 				552712F52126B76C0096F27E /* AppDelegate.swift */,
 				552712F72126B76C0096F27E /* ViewController.swift */,
-				552713072126B83D0096F27E /* Measure.swift */,
-				552713092126B83D0096F27E /* PoseView.swift */,
-				552713082126B83D0096F27E /* VideoCapture.swift */,
+				552713192126C6CB0096F27E /* Estimation Model */,
+				552713132126C6BA0096F27E /* DrawingView.swift */,
+				552713142126C6BA0096F27E /* Measure.swift */,
+				552713122126C6BA0096F27E /* VideoCapture.swift */,
+				552713112126C6B90096F27E /* HeatmapView.swift */,
 				552712F92126B76C0096F27E /* Main.storyboard */,
 				552712FC2126B76E0096F27E /* Assets.xcassets */,
 				552712FE2126B76E0096F27E /* LaunchScreen.storyboard */,
@@ -136,6 +142,7 @@
 			files = (
 				552713002126B76E0096F27E /* LaunchScreen.storyboard in Resources */,
 				552712FD2126B76E0096F27E /* Assets.xcassets in Resources */,
+				5527131A2126C6CB0096F27E /* Estimation Model in Resources */,
 				552712FB2126B76C0096F27E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,12 +154,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5527130B2126B83D0096F27E /* VideoCapture.swift in Sources */,
+				552713182126C6BA0096F27E /* Measure.swift in Sources */,
 				552712F82126B76C0096F27E /* ViewController.swift in Sources */,
-				5527130C2126B83D0096F27E /* PoseView.swift in Sources */,
+				552713162126C6BA0096F27E /* VideoCapture.swift in Sources */,
 				552712F62126B76C0096F27E /* AppDelegate.swift in Sources */,
-				552713102126BA030096F27E /* mv2_cpm_model_104000.mlmodel in Sources */,
-				5527130A2126B83D0096F27E /* Measure.swift in Sources */,
+				552713172126C6BA0096F27E /* DrawingView.swift in Sources */,
+				552713152126C6BA0096F27E /* HeatmapView.swift in Sources */,
+				5527131C2126C6D30096F27E /* mv2_cpm_model_98000.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

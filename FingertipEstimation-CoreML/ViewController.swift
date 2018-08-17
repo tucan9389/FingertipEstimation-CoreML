@@ -10,35 +10,33 @@ import UIKit
 import Vision
 import CoreMedia
 
-class ViewController: UIViewController, VideoCaptureDelegate {
+class ViewController: UIViewController {
     
     public typealias BodyPoint = (point: CGPoint, confidence: Double)
     public typealias DetectObjectsCompletion = ([BodyPoint?]?, Error?) -> Void
     
-    // MARK: - UI 프로퍼티
-    
+    // MARK: - UI Properties
     @IBOutlet weak var videoPreview: UIView!
-    @IBOutlet weak var poseView: PoseView!
+    //@IBOutlet weak var poseView: PoseView!
+    @IBOutlet weak var drawingView: DrawingView!
     @IBOutlet weak var labelsTableView: UITableView!
-    
     
     @IBOutlet weak var inferenceLabel: UILabel!
     @IBOutlet weak var etimeLabel: UILabel!
     @IBOutlet weak var fpsLabel: UILabel!
     
-    
+    // MARK - Inference Result Data
     private var tableData: [BodyPoint?] = []
+    private var maFilter: MovingAverageFilter = MovingAverageFilter()
     
-    // MARK - 성능 측정 프러퍼티
+    // MARK - Performance Measurement Property
     private let 👨‍🔧 = 📏()
     
-    
     // MARK - Core ML model
-    typealias EstimationModel = mv2_cpm_model_104000
+    typealias EstimationModel = mv2_cpm_model_98000
     var coremlModel: EstimationModel? = nil
     
-    // MARK: - Vision 프로퍼티
-    
+    // MARK: - Vision Properties
     var request: VNCoreMLRequest!
     var visionModel: VNCoreMLModel! {
         didSet {
@@ -47,15 +45,10 @@ class ViewController: UIViewController, VideoCaptureDelegate {
         }
     }
     
-    
-    // MARK: - AV 프로퍼티
-    
+    // MARK: - AV Property
     var videoCapture: VideoCapture!
-    let semaphore = DispatchSemaphore(value: 2)
     
-    
-    // MARK: - 라이프사이클 메소드
-    
+    // MARK: - View Controller Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,7 +64,7 @@ class ViewController: UIViewController, VideoCaptureDelegate {
         labelsTableView.dataSource = self
         
         // 레이블 점 세팅
-        poseView.setUpOutputComponent()
+        //poseView.setUpOutputComponent()
         
         // 성능측정용 델리게이트 설정
         👨‍🔧.delegate = self
@@ -81,14 +74,13 @@ class ViewController: UIViewController, VideoCaptureDelegate {
         super.didReceiveMemoryWarning()
     }
     
-    
-    // MARK: - 초기 세팅
-    
+    // MARK: - SetUp Video
     func setUpCamera() {
         videoCapture = VideoCapture()
         videoCapture.delegate = self
         videoCapture.fps = 30
         videoCapture.setUp(sessionPreset: .vga640x480) { success in
+            
             if success {
                 // UI에 비디오 미리보기 뷰 넣기
                 if let previewLayer = self.videoCapture.previewLayer {
@@ -106,16 +98,14 @@ class ViewController: UIViewController, VideoCaptureDelegate {
         videoCapture.previewLayer?.frame = videoPreview.bounds
     }
     
-    
-    
-    // MARK: - 추론하기
-    
+    // MARK: - Inferencing
     func predictUsingVision(pixelBuffer: CVPixelBuffer) {
         // Vision이 입력이미지를 자동으로 크기조정을 해줄 것임.
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
         try? handler.perform([request])
     }
     
+    // MARK: - Poseprocessing
     func visionRequestDidComplete(request: VNRequest, error: Error?) {
         self.👨‍🔧.🏷(with: "endInference")
         if let observations = request.results as? [VNCoreMLFeatureValueObservation],
@@ -124,9 +114,16 @@ class ViewController: UIViewController, VideoCaptureDelegate {
             // convert heatmap to [keypoint]
             let n_kpoints = convert(heatmap: heatmap)
             
+            
+            
             DispatchQueue.main.sync {
                 // draw line
-                self.poseView.bodyPoints = n_kpoints
+                if let bp = n_kpoints.first, let c: Double = bp?.confidence, c > 0.3, let p: CGPoint = bp?.point {
+                    maFilter.addPoint(point: p)
+                } else {
+                    maFilter.addPoint(point: nil)
+                }
+                self.drawingView.append(p: maFilter.point)
                 
                 // show key points description
                 self.showKeypointsDescription(with: n_kpoints)
@@ -150,6 +147,7 @@ class ViewController: UIViewController, VideoCaptureDelegate {
             return nil
         }
         
+        
         for k in 0..<keypoint_number {
             for i in 0..<heatmap_w {
                 for j in 0..<heatmap_h {
@@ -164,11 +162,12 @@ class ViewController: UIViewController, VideoCaptureDelegate {
             }
         }
         
+        
         // transpose to (1.0, 1.0)
         n_kpoints = n_kpoints.map { kpoint -> BodyPoint? in
             if let kp = kpoint {
-                return (CGPoint(x: kp.point.x/CGFloat(heatmap_w),
-                                y: kp.point.y/CGFloat(heatmap_h)),
+                return (CGPoint(x: (kp.point.x+0.5)/CGFloat(heatmap_w),
+                                y: (kp.point.y+0.5)/CGFloat(heatmap_h)),
                         kp.confidence)
             } else {
                 return nil
@@ -179,26 +178,27 @@ class ViewController: UIViewController, VideoCaptureDelegate {
     }
     
     func showKeypointsDescription(with n_kpoints: [BodyPoint?]) {
-        
         self.tableData = n_kpoints
         self.labelsTableView.reloadData()
-        
     }
-    
-    
-    // MARK: - VideoCaptureDelegate
-    
+}
+
+// MARK: - VideoCaptureDelegate
+extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ capture: VideoCapture, didCaptureVideoFrame pixelBuffer: CVPixelBuffer?, timestamp: CMTime) {
         // 카메라에서 캡쳐된 화면은 pixelBuffer에 담김.
         // Vision 프레임워크에서는 이미지 대신 pixelBuffer를 바로 사용 가능
         if let pixelBuffer = pixelBuffer {
             // start of measure
             self.👨‍🔧.🎬👏()
+            
+            // predict!
             self.predictUsingVision(pixelBuffer: pixelBuffer)
         }
     }
 }
 
+// MARK: - UITableView Data Source
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableData.count// > 0 ? 1 : 0
@@ -217,6 +217,8 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
+
+// MARK: - 📏(Performance Measurement) Delegate
 extension ViewController: 📏Delegate {
     func updateMeasure(inferenceTime: Double, executionTime: Double, fps: Int) {
         //print(executionTime, fps)
@@ -227,43 +229,43 @@ extension ViewController: 📏Delegate {
 }
 
 
-// #MARK: - 상수
-
+// MARK: - Constant
 struct Constant {
     static let pointLabels = [
-        "index endpoint", //0
-        "index DIP", //1
-        "index PIP", //2
-        "index MP", //3
+        "top\t\t\t", //0
+        "neck\t\t", //1
         
-        "N/A label 5", //4
-        "N/A label 6", //5
-        "N/A label 7", //6
-        "N/A label 8", //7
-        "N/A label 9", //8
-        "N/A label 10", //9
-        "N/A label 11", //10
-        "N/A label 12", //11
-        "N/A label 13", //12
-        "N/A label 14", //13
+        "R shoulder\t", //2
+        "R elbow\t\t", //3
+        "R wrist\t\t", //4
+        "L shoulder\t", //5
+        "L elbow\t\t", //6
+        "L wrist\t\t", //7
+        
+        "R hip\t\t", //8
+        "R knee\t\t", //9
+        "R ankle\t\t", //10
+        "L hip\t\t", //11
+        "L knee\t\t", //12
+        "L ankle\t\t", //13
     ]
     
     static let connectingPointIndexs: [(Int, Int)] = [
-        //        (0, 1), // top-neck
-        //
-        //        (1, 2), // neck-rshoulder
-        //        (2, 3), // rshoulder-relbow
-        //        (3, 4), // relbow-rwrist
-        //        (1, 8), // neck-rhip
-        //        (8, 9), // rhip-rknee
-        //        (9, 10), // rknee-rankle
-        //
-        //        (1, 5), // neck-lshoulder
-        //        (5, 6), // lshoulder-lelbow
-        //        (6, 7), // lelbow-lwrist
-        //        (1, 11), // neck-lhip
-        //        (11, 12), // lhip-lknee
-        //        (12, 13), // lknee-lankle
+        (0, 1), // top-neck
+        
+        (1, 2), // neck-rshoulder
+        (2, 3), // rshoulder-relbow
+        (3, 4), // relbow-rwrist
+        (1, 8), // neck-rhip
+        (8, 9), // rhip-rknee
+        (9, 10), // rknee-rankle
+        
+        (1, 5), // neck-lshoulder
+        (5, 6), // lshoulder-lelbow
+        (6, 7), // lelbow-lwrist
+        (1, 11), // neck-lhip
+        (11, 12), // lhip-lknee
+        (12, 13), // lknee-lankle
     ]
     static let jointLineColor: UIColor = UIColor(displayP3Red: 87.0/255.0,
                                                  green: 255.0/255.0,
@@ -286,4 +288,37 @@ struct Constant {
         .white,
         .gray,
         ]
+}
+
+
+class MovingAverageFilter {
+    let maximumCount: Int = 3
+    var pArray: [CGPoint?] = []
+    
+    func addPoint(point: CGPoint?) {
+        pArray.append(point)
+        if pArray.count > maximumCount {
+            pArray.remove(at: 0)
+        }
+    }
+    
+    var point: CGPoint? {
+        if pArray.count > 0 {
+            var count: Int = 0
+            var result: CGPoint = .zero
+            for p in pArray {
+                if let point: CGPoint = p {
+                    count += 1
+                    result = CGPoint(x: result.x + point.x, y: result.y + point.y)
+                }
+            }
+            if count > 0 {
+                return CGPoint(x: result.x / CGFloat(count), y: result.y / CGFloat(count))
+            } else {
+                return nil
+            }
+        } else {
+            return nil
+        }
+    }
 }
