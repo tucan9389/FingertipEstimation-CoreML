@@ -7,7 +7,7 @@ Detect fingertip by using machine learning for pose estimation.
 
 ## How it works
 
-![how_it_works](/Users/canapio/Project/machine%20learning/MoT%20Labs/github_project/ios-project/FingertipEstimation-CoreML/resource/how_it_works.png)
+![how_it_works](resource/how_it_works.png)
 
 ## Build & Run
 
