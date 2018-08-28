@@ -94,6 +94,11 @@ class ViewController: UIViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        resizePreviewLayer()
+    }
+    
     func resizePreviewLayer() {
         videoCapture.previewLayer?.frame = videoPreview.bounds
     }
